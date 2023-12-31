@@ -1,102 +1,11 @@
 const http = require("http");
 const fs = require('fs');
-const url = require("url");
-const readline = require('readline');
-const events = require('events');
-const LineByLine = require('line-by-line');
 
-const host = "http://localhost:8008"
 const port = 8008;
+const mongoUri = fs.readFileSync("mongoUri.txt", 'utf8');
 
-const {typeCheck, getPath, keepAlive, errorHeader} = require("./req_processing.js");
-
-async function parseLine(data, res, type, rl)
-{
-    // Process a line of a file and feed it into HTTP response.
-    // data is the line
-    // res is the HTTP response
-    // type is the content-type of the response
-    // rl is the read interface
-    // {{extend:file}} can be used to load the specified file in place of the instruction
-    let instructionStart = data.indexOf("{{");
-    let instructionEnd = data.indexOf("}}");        
-
-    if ( instructionStart != -1 && instructionEnd != -1)
-    {
-        rl.pause()
-        let instruction = data.slice(instructionStart+2, instructionEnd).split(":");
-        if (instruction[0] == "extend")
-        {
-            await render(instruction[1], res, type, true);  
-            rl.resume();         
-        }
-        // console.log(instruction);
-    }
-    else
-    {
-        res.write(data);
-        res.write("\r\n");
-    }
-}
-
-async function render(path, res, type, recurring=false, callByError=false)
-{   
-    // Render file and send it as HTTP response
-    // path is the path to the file to be rendered
-    // type is the MIME content-type for the response
-    // recurring indicates whether this render function is called by another render function
-    
-    console.log("Trying to render: ", path, ". Recurring = ", recurring);
-
-    try{
-        let rl = new LineByLine(path);
-
-        rl.on("line", (data)=>{
-            parseLine(data, res, type, rl).then();
-        });
-
-        rl.on("end", (data)=>{
-            console.log("Finished rendering: ", path, ". Recurring = ", recurring);
-            if (!recurring)
-            {
-                console.log("Response sent");
-                res.statusCode = 200;
-                res.end(data);
-            }
-        })
-        await events.once(rl, 'end');
-    } catch(err)
-    {
-        error(err, res, type, callByError);
-    }    
-    
-}
-
-async function error(err, res, type, cyclic=false)
-{
-    // err = Error information
-    // res = Response object
-    // Type = True if HTML is accepted, false otherwise
-    // cyclic is used to handle the case where an error occurs when rendering 404.html and one error function invokes another error function.
-    console.log(`Error trigger: ${err}`);
-    errorHeader(res)
-    if (cyclic || !type)
-    {
-        console.log("Response sent");
-        res.end();
-        return;
-    }
-    else
-    {
-        await render("404.html", res, type, false, true);
-    }
-
-}
-
-function register()
-{
-    return;
-}
+const {typeCheck, getPath, keepAlive} = require("./req_processing.js");
+const {render, error} = require("./render.js")
 
 
 function getRequest(req, res)
@@ -113,19 +22,63 @@ function getRequest(req, res)
     render(path, res, result.acceptHTML);
 }
 
+
+function register(req, res, acceptHTML)
+{
+    // Process POST request to register.html
+    let chunks = [];
+    req.on("data", (data)=>{chunks.push(data)});
+    req.on("end", ()=>{
+        // Convert data into an object
+        const data = Buffer.concat(chunks);
+        const query = data.toString();
+        const parsed = new URLSearchParams(query);
+        let formEntries = {}
+        for (let pair of parsed.entries())
+        {
+            formEntries[pair[0]] = pair[1];
+        }
+        console.log("Register POST request query: ", formEntries)
+        // Check if all fields exist and meet the constraint
+        let requiredProperties = ["username", "password", "password2"];
+        for (let property of requiredProperties)
+        {
+            if (!formEntries.hasOwnProperty(property))
+            {
+                error(`${property} not in POST query`, res, acceptHTML);
+                return;
+            }
+        }
+        if (formEntries.password.length < 8 || !formEntries.password.match(/[a-zA-Z]/) || !formEntries.password.match(/\d/))
+        {
+            error("Passwords does not meet requirement", res, acceptHTML);
+            return;
+        }
+        if (formEntries.password !== formEntries.password2)
+        {
+            error("Passwords do not match", res, acceptHTML);
+            return;
+        }
+        // console.log("Pass validations");
+        const client = new MongoClient(uri);
+
+    })
+}
+
+
 function postRequest(req, res)
 {
     let path = getPath(req);
-    console.log(`Get ${path}`);
+    console.log(`Post ${path}`);
     let result = typeCheck(path, req, res);
     if (result.error)
     {
         error(result.errorInfo, res, result.acceptHTML);
         return;
     }
-    if (req.url == "register.html")
+    if (path == "./register.html")
     {
-        register();
+        register(req, res, result.acceptHTML);
     }
     else
     {
@@ -137,7 +90,7 @@ function resolveRequest(req, res)
 {
     // Process request
     console.log(`Request arrived: method=${req.method}, url=${req.url}`);
-    console.log(req.headers)
+    // console.log(req.headers)
     keepAlive(req, res)
     if (req.method.toUpperCase() == "GET")
     {

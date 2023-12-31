@@ -5,7 +5,6 @@ const mime = require("mime-types")
 module.exports.typeCheck = typeCheck;
 module.exports.getPath = getPath;
 module.exports.keepAlive = keepAlive;
-module.exports.errorHeader = errorHeader;
 
 
 function typeCheck(path, req, res)
@@ -16,7 +15,6 @@ function typeCheck(path, req, res)
     // Return 1 if the expected content-type is accepted and html is accepted
     let expectedType = mime.lookup(path);
     let result = {}
-    console.log("Expected type is: ", expectedType)
     if (req.headers.accept.indexOf(expectedType) != -1 || req.headers.accept.indexOf("*/*") != -1)
     {
         res.setHeader("content-type", expectedType);
@@ -65,8 +63,3 @@ function keepAlive(req, res)
     
 }
 
-function errorHeader(res)
-{
-    res.statusCode = 404;
-    res.setHeader("connection", "close");
-}

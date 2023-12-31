@@ -1,0 +1,1 @@
+mongodb+srv://dvv112345:12345@cluster0.d8dgckj.mongodb.net/?retryWrites=true&w=majority

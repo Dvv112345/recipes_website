@@ -1,14 +1,16 @@
 const { MongoClient} = require('mongodb');
+const fs = require("fs")
 
-const uri = "mongodb+srv://dvv112345:12345@cluster0.d8dgckj.mongodb.net/?retryWrites=true&w=majority";
+const uri = fs.readFileSync("mongoURL.txt", 'utf8');
 
 async function main(){
     const client = new MongoClient(uri);
 
     try {
+        console.log("Connecting");
         // Connect to the MongoDB cluster
         await client.connect();
-
+        console.log("Connected");
         // Make the appropriate DB calls
         let result = client.db("recipes").collection("users").find();
         // result.then(console.log);

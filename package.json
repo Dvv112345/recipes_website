@@ -1,0 +1,24 @@
+{
+  "name": "recipes_website",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dvv112345/recipes_website.git"
+  },
+  "author": "V",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dvv112345/recipes_website/issues"
+  },
+  "homepage": "https://github.com/Dvv112345/recipes_website#readme",
+  "dependencies": {
+    "line-by-line": "^0.1.6",
+    "mime-types": "^2.1.35",
+    "mongodb": "^6.3.0"
+  }
+}
