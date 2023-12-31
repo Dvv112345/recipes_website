@@ -1,0 +1,11 @@
+.cardLink {
+    text-decoration: none;
+}
+
+.feedback p {
+    margin-bottom: 0;
+}
+
+.satisfied {
+    color: green;
+}

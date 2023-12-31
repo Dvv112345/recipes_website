@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  {{extend:templates/head.html}}
+  <body>
+    {{extend:templates/nav.html}}
+    <div class="container-xxl">
+      <h2 class="text-center">Register a new account </h2>
+      <div class="container">
+        <form action="register.html" method="POST" class="needs-validation" id="registerForm" novalidate>
+          <div class="row">
+            <div class="col-0 col-md-4"></div>
+            <div class="col-md-4 mb-3">
+              <input type="text" class="form-control registerInput" id="regUsername" placeholder="Username" autocomplete="on" required>
+              <div class="invalid-feedback">
+                Please enter a username.
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-0 col-md-4"></div>
+            <div class="col-md-4 mb-3">
+              <input type="password" class="form-control registerInput" id="regPassword" name="password" 
+              placeholder="Password" pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}" required>
+              <div class="invalid-feedback feedback">
+                <p id="length">At least 8 characters</p>
+                <p id="letter">Contain at least one letter</p>
+                <p id="number">Contain at least one number</p>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-0 col-md-4"></div>
+            <div class="col-md-4 mb-3">
+              <input type="password" class="form-control registerInput" id="regPassword2" name="password2" placeholder="Repeat Password" required>
+              <div class="invalid-feedback" id="password2Feedback">
+                Passwords do not match
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-0 col-md-4">
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-outline-success w-100" type="submit">Submit form</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    {{extend:templates/linkScript.html}}
+    <script src="public/registerValidate.js"></script>
+  </body>
+</html>
