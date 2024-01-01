@@ -1,7 +1,9 @@
+// Test file for retrieving mongoDB entries
+
 const { MongoClient} = require('mongodb');
 const fs = require("fs")
 
-const uri = fs.readFileSync("mongoURL.txt", 'utf8');
+const uri = fs.readFileSync("mongoUri.txt", 'utf8');
 
 async function main(){
     const client = new MongoClient(uri);

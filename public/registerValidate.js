@@ -39,7 +39,8 @@ let password = document.getElementById("regPassword");
 let password2 = document.getElementById("regPassword2");
 password.addEventListener("keyup", ()=>{
     // Update password2's pattern
-    password2.setAttribute("pattern", password.value);
+    let password2Pattern = password.value.replaceAll(/\W/g, (val)=>"\\"+val);
+    password2.setAttribute("pattern", password2Pattern);
     // Check if each constraint is satified and change the requirements' color
     let val = password.value;
     togglePasswordReq(document.getElementById("letter"), val.match(/[a-zA-Z]/))

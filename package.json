@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Dvv112345/recipes_website#readme",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "line-by-line": "^0.1.6",
     "mime-types": "^2.1.35",
     "mongodb": "^6.3.0"
