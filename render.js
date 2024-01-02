@@ -1,8 +1,10 @@
 const LineByLine = require('line-by-line');
 const events = require('events');
+const fs = require("fs");
 
 module.exports.render = render;
 module.exports.error = error;
+module.exports.image = image;
 
 function errorHeader(res)
 {
@@ -10,50 +12,113 @@ function errorHeader(res)
     res.setHeader("connection", "close");
 }
 
-async function parseLine(data, res, type, rl)
+async function parseLine(data, res, type, rl, write, args)
 {
     // Process a line of a file and feed it into HTTP response.
     // data is the line
     // res is the HTTP response
     // type is the content-type of the response
     // rl is the read interface
+    // write is a flag that indicates whether the current line is in an if block that evaluates to false.
     // {{extend:file}} can be used to load the specified file in place of the instruction
+    // {{if:arg}} can be used to load the content between {{if:arg}} and {{endif}} if args[arg] is true 
     let instructionStart = data.indexOf("{{");
-    let instructionEnd = data.indexOf("}}");        
+    let instructionEnd = data.indexOf("}}");
+    let instruction = [];
 
     if ( instructionStart != -1 && instructionEnd != -1)
     {
-        rl.pause()
-        let instruction = data.slice(instructionStart+2, instructionEnd).split(":");
+        instruction = data.slice(instructionStart+2, instructionEnd).split(":");
+    }
+    if (instruction.length == 1)
+    {
+        if (instruction[0] == "endif")
+        {
+            if (write < 0)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+    else if (instruction.length == 2)
+    {
+        if(write < 0 && (instruction[0] == "if" || instruction[0] == "ifnot"))
+        {
+            return -1;
+        }
+        else if(write < 0)
+        {
+            return 0;
+        }
         if (instruction[0] == "extend")
         {
-            await render(instruction[1], res, type, true);  
-            rl.resume();         
+            rl.pause()
+            await render(instruction[1], res, type, args, true);     
+            rl.resume();
+            return 0; 
         }
-        // console.log(instruction);
+        else if (instruction[0] == "if")
+        {
+            if (!args || !args.hasOwnProperty(instruction[1])||!args[instruction[1]])
+            {
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else if(instruction[0] == "ifnot")
+        {
+            if (!args || !args.hasOwnProperty(instruction[1])||!args[instruction[1]])
+            {
+                return 0;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+        else 
+        {
+            res.write(data);
+            res.write("\r\n");
+            return 0;
+        }
     }
     else
     {
+        if (write < 0)
+        {
+            return 0;
+        }
         res.write(data);
         res.write("\r\n");
+        return 0;
     }
 }
 
 
-async function render(path, res, type, recurring=false, callByError=false)
+async function render(path, res, type, args=null, recurring=false, callByError=false)
 {   
     // Render file and send it as HTTP response
     // path is the path to the file to be rendered
     // type is the MIME content-type for the response
     // recurring indicates whether this render function is called by another render function
     
-    console.log("Trying to render: ", path, ". Recurring = ", recurring);
+    console.log("Trying to render: ", path, ". Recurring = ", recurring, "args = ", args);
+    let write = 0;
 
     try{
         let rl = new LineByLine(path);
 
         rl.on("line", (data)=>{
-            parseLine(data, res, type, rl).then();
+            // console.log(data);
+            parseLine(data, res, type, rl, write, args).then((val)=>{write+=val});
         });
 
         rl.on("end", (data)=>{
@@ -84,12 +149,27 @@ async function error(err, res, type, cyclic=false)
     if (cyclic || !type)
     {
         console.log("Response sent");
-        res.end();
+        res.end(err);
         return;
     }
     else
     {
-        await render("404.html", res, type, false, true);
+        await render("templates/404.html", res, type, null, false, true);
     }
 
+}
+
+
+function image(path, res, acceptHTML)
+{
+    fs.readFile(path, (err, content)=>{
+        if (err)
+        {
+            error(err, res, acceptHTML);
+        }
+        else
+        {
+            res.end(content);
+        }  
+    })
 }

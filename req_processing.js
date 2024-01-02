@@ -7,15 +7,22 @@ module.exports.getPath = getPath;
 module.exports.keepAlive = keepAlive;
 
 
-function typeCheck(path, req, res)
+function typeCheck(req, res)
 {
     // Check if the content-type we are expected to return based on the path is accepted and set content-type.
-    // Return -1 if the expected content-type is not accepted
-    // Return 0 if the expected content-type is accepted but html is not accepted
-    // Return 1 if the expected content-type is accepted and html is accepted
-    let expectedType = mime.lookup(path);
-    let result = {}
-    if (req.headers.accept.indexOf(expectedType) != -1 || req.headers.accept.indexOf("*/*") != -1)
+    // Return an object with three properties:
+    // error that specifies whether the MIME type matches expected MIME type
+    // acceptHTML that specifies whether HTML type is expected. 
+    // expectedType that contain an array of the two parts of MIME type.
+    let expectedType = mime.lookup(req.url);
+    if (!expectedType)
+    {
+        expectedType = "*/*";
+    }
+    let parts = expectedType.split("/");
+    let result = {"type":parts}
+    if (req.headers.accept.indexOf(expectedType) != -1 || 
+    req.headers.accept.indexOf("*/*") != -1 || req.headers.accept.indexOf(`${parts[0]}/*`) != -1)
     {
         res.setHeader("content-type", expectedType);
         result.error = false;
@@ -46,7 +53,7 @@ function getPath(req)
     }
     // console.log(req.headers);
     reqURL = new url.URL(reqURL, "http://placeholder");
-    let path = "."+reqURL.pathname;
+    let path = "./templates"+reqURL.pathname;
     return path;
 }
 

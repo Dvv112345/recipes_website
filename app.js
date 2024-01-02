@@ -9,7 +9,26 @@ const port = 8008;
 const saltRounds = 10;
 
 const {typeCheck, getPath, keepAlive} = require("./req_processing.js");
-const {render, error} = require("./render.js")
+const {render, error, image} = require("./render.js")
+
+class Session {
+    // A session variable for maintaining a user's session.
+    constructor (username)
+    {
+        this.username = username;
+        this.secret = Math.round(Math.random() * 1000000).toString();
+    }
+
+    createCookie ()
+    {
+        return [secureCookie("username", this.username), secureCookie("secret", this.secret)];
+    }
+}
+
+function secureCookie(name, val)
+{
+    return `${name}=${val}; HttpOnly`;
+}
 
 
 function getRequest(req, res)
@@ -17,10 +36,15 @@ function getRequest(req, res)
     // Process GET request
     let path = getPath(req);
     console.log(`Get ${path}`);
-    let result = typeCheck(path, req, res);
+    let result = typeCheck(req, res);
     if (result.error)
     {
         error(result.errorInfo, res, result.acceptHTML);
+        return;
+    }
+    if (result.type[0] == "image")
+    {
+        image(path, res, result.acceptHTML)
         return;
     }
     render(path, res, result.acceptHTML);
@@ -42,13 +66,13 @@ function checkEntries(formEntries, res, acceptHTML, requiredProperties)
 
 async function register(formEntries, res, acceptHTML)
 {
+    res.statusCode = 200;
     // Check if all fields exist and meet the constraint
     let requiredProperties = ["username", "password", "password2"];
     if (!checkEntries(formEntries, res, acceptHTML, requiredProperties))
     {
         return;
     }
-
     if (formEntries.password.length < 8 || !formEntries.password.match(/[a-zA-Z]/) || !formEntries.password.match(/\d/))
     {
         error("Passwords does not meet requirement", res, acceptHTML);
@@ -84,10 +108,9 @@ async function register(formEntries, res, acceptHTML)
                 return;
             });
         console.log("User inserted");
-        render("./home.html", res, acceptHTML);
-
+        render("./templates/home.html", res, acceptHTML);
     } catch (e) {
-        console.error("Error: ", e);
+        error(e, res, acceptHTML);
     } finally {
         await client.close();
         // console.log("Connection closed");
@@ -97,12 +120,12 @@ async function register(formEntries, res, acceptHTML)
 
 async function login(formEntries, res, acceptHTML)
 {
+    res.statusCode = 200;
     let requiredProperties = ["username", "password"];
     if (!checkEntries(formEntries, res, acceptHTML, requiredProperties))
     {
         return;
     }
-
     // Connect to database
     const client = new MongoClient(uri);
   
@@ -123,14 +146,16 @@ async function login(formEntries, res, acceptHTML)
         if (compResult)
         {
             console.log("Correct login credential");
-            render("./home.html", res, acceptHTML);
+            render("./templates/home.html", res, acceptHTML, {login:true});
+            let session = new Session(formEntries.username);
+            res.setHeader("set-cookie", session.createCookie());
         }
         else
         {
             error("Incorrect login credential", res, acceptHTML);
         }
     } catch (e) {
-        console.error("Error: ", e);
+        error(e, res, acceptHTML);
     } finally {
         await client.close();
         // console.log("Connection closed");
@@ -140,9 +165,8 @@ async function login(formEntries, res, acceptHTML)
 
 async function postRequest(req, res)
 {
-    let path = getPath(req);
-    console.log(`Post ${path}`);
-    let result = typeCheck(path, req, res);
+    console.log(`Post ${req.url}`);
+    let result = typeCheck(req, res);
     if (result.error)
     {
         error(result.errorInfo, res, result.acceptHTML);
@@ -166,11 +190,11 @@ async function postRequest(req, res)
     })
     await events.once(req, 'end');
 
-    if (path == "./register.html")
+    if (req.url == "/register.html")
     {
         register(formEntries, res, result.acceptHTML);
     }
-    else if (path == "./login.html")
+    else if (req.url == "/")
     {
         login(formEntries, res, result.acceptHTML);
     }
