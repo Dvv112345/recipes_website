@@ -83,6 +83,18 @@ async function parseLine(data, res, type, rl, write, args)
                 return -1;
             }
         }
+        else if(instruction[0] == "replace")
+        {
+            let replacement = ""
+            if (args && args.hasOwnProperty(instruction[1]))
+            {
+                replacement = args[instruction[1]]
+            }
+            console.log("replacement: ", replacement)
+            res.write(data.slice(0,instructionStart)+replacement+data.slice(instructionEnd+2));
+            res.write("\r\n");
+            return 0;
+        }
         else 
         {
             res.write(data);
@@ -108,6 +120,7 @@ async function render(path, res, type, args=null, recurring=false, callByError=f
     // Render file and send it as HTTP response
     // path is the path to the file to be rendered
     // type is the MIME content-type for the response
+    // args contains the various arguments used for rendering html
     // recurring indicates whether this render function is called by another render function
     
     console.log("Trying to render: ", path, ". Recurring = ", recurring, "args = ", args);
@@ -133,16 +146,17 @@ async function render(path, res, type, args=null, recurring=false, callByError=f
         await events.once(rl, 'end');
     } catch(err)
     {
-        error(err, res, type, callByError);
+        error("404 not found", res, type, args, callByError);
     }    
     
 }
 
-async function error(err, res, type, cyclic=false)
+async function error(err, res, type, args=null, cyclic=false)
 {
     // err = Error information
     // res = Response object
     // Type = True if HTML is accepted, false otherwise
+    // args contains the various arguments used for rendering html
     // cyclic is used to handle the case where an error occurs when rendering 404.html and one error function invokes another error function.
     console.log(`Error trigger: ${err}`);
     errorHeader(res)
@@ -154,18 +168,19 @@ async function error(err, res, type, cyclic=false)
     }
     else
     {
-        await render("templates/404.html", res, type, null, false, true);
+        args["error"] = err;
+        await render("templates/404.html", res, type, args, false, true);
     }
 
 }
 
 
-function image(path, res, acceptHTML)
+function image(path, res, acceptHTML, args)
 {
     fs.readFile(path, (err, content)=>{
         if (err)
         {
-            error(err, res, acceptHTML);
+            error(err, res, acceptHTML, args);
         }
         else
         {
