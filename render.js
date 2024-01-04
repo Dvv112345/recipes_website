@@ -93,7 +93,6 @@ async function parseLine(data, res, type, rl, write, args)
             {
                 replacement = args[instruction[1]]
             }
-            console.log("replacement: ", replacement)
             res.write(data.slice(0,instructionStart)+replacement+data.slice(instructionEnd+2));
             res.write("\r\n");
             return 0;
@@ -136,7 +135,7 @@ async function render(path, res, type, args=null, recurring=false, callByError=f
     // args contains the various arguments used for rendering html
     // recurring indicates whether this render function is called by another render function
     
-    console.log("Trying to render: ", path, ". Recurring = ", recurring, "args = ", args);
+    console.log("Trying to render: ", path, ". Recurring = ", recurring);
     let write = 0;
 
     try{
@@ -226,7 +225,7 @@ async function forEach(path, res, type, searchParam, args)
             }
             let newArgs = Object.assign(args, doc);
             await render(path, res, type, newArgs, true);
-            console.log(doc);
+            // console.log(doc);
         }
 
     } catch (e) {

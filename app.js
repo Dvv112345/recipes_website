@@ -59,7 +59,6 @@ function checkEntries(formEntries, res, acceptHTML, requiredProperties, args)
     {
         if (!formEntries.hasOwnProperty(property))
         {
-            error(`${property} not in POST query`, res, acceptHTML, args);
             return false;
         }
     }
@@ -73,16 +72,26 @@ async function register(formEntries, res, acceptHTML, args)
     let requiredProperties = ["username", "password", "password2"];
     if (!checkEntries(formEntries, res, acceptHTML, requiredProperties, args))
     {
+        args["registerError"] = "<div class='text-center alert alert-danger'>\
+        Please enter username, password, and reenter password</div>"
+        render("templates/register.html", res, acceptHTML, args);
         return;
     }
     if (formEntries.password.length < 8 || !formEntries.password.match(/[a-zA-Z]/) || !formEntries.password.match(/\d/))
     {
-        error("Passwords does not meet requirement", res, acceptHTML, args);
+        args["registerError"] = "<div class='text-left alert alert-danger'>\
+        \nPassword do not meet the requirements:\
+        \n<ul><li>Password needs to have at least 8 characters</li>\
+        \n<li>Password needs to contain at least one letter</li>\
+        \n<li>Password needs to contain at least one number</li></ul></div>";
+        render("templates/register.html", res, acceptHTML, args);
         return;
     }
     if (formEntries.password !== formEntries.password2)
     {
-        error("Passwords do not match", res, acceptHTML, args);
+        args["registerError"] = "<div class='text-center alert alert-danger'>\
+        Passwords do not match</div>";
+        render("templates/register.html", res, acceptHTML, args);
         return;
     }
     
@@ -98,7 +107,9 @@ async function register(formEntries, res, acceptHTML, args)
         let result = await collection.findOne({"username": formEntries.username});
         if (result)
         {
-            error("Username already exists", res, acceptHTML, args);
+            args["registerError"] = "<div class='text-center alert alert-danger'>\
+            Username already exists</div>";
+            render("templates/register.html", res, acceptHTML, args);
             return;
         }
         // Hash password
@@ -106,11 +117,17 @@ async function register(formEntries, res, acceptHTML, args)
         insertEntry["passwordHash"] = await bcrypt.hash(formEntries.password, saltRounds);
         await collection.insertOne(insertEntry).catch(
             (err)=>{
-                error(err, res, acceptHTML, args);
+                args["registerError"] = "<div class='text-center alert alert-danger'>\
+                Unexpected error occured, please try again.</div>"
+                console.err(err);
+                render("templates/register.html", res, acceptHTML, args);
                 return;
             });
         console.log("User inserted");
-        render("./templates/home.html", res, acceptHTML, {"login":true, "username": formEntries.username});
+        args["login"] = true;
+        args["username"] = formEntries.username
+        args["recipes"] = [{"public":true}, "recipe"];
+        render("./templates/home.html", res, acceptHTML, args);
     } catch (e) {
         error(e, res, acceptHTML, args);
     } finally {
@@ -124,8 +141,11 @@ async function login(formEntries, res, acceptHTML, args)
 {
     res.statusCode = 200;
     let requiredProperties = ["username", "password"];
+    args["recipes"] = [{"public":true}, "recipe"];
     if (!checkEntries(formEntries, res, acceptHTML, requiredProperties, args))
     {
+        args["loginError"] = "Please enter username and password";
+        render("./templates/home.html", res, acceptHTML, args);
         return;
     }
     // Connect to database
@@ -140,7 +160,8 @@ async function login(formEntries, res, acceptHTML, args)
         let storedUser = await collection.findOne({"username": formEntries.username});
         if (!storedUser)
         {
-            error("Username does not exists", res, acceptHTML, args);
+            args["loginError"] = "Incorrect username or password";
+            render("./templates/home.html", res, acceptHTML, args);
             return;
         }
         // Compare entered password with hash
@@ -148,15 +169,21 @@ async function login(formEntries, res, acceptHTML, args)
         if (compResult)
         {
             console.log("Correct login credential");
-            render("./templates/home.html", res, acceptHTML, {"login":true, "username": formEntries.username});
+            args["login"] = true;
+            args["formEntries"] = formEntries.username
             res.setHeader("set-cookie", sessions.addSession(formEntries.username));
+            args["recipes"] = [{"public":true}, "recipe"];
+            render("./templates/home.html", res, acceptHTML, args);
+            
         }
         else
         {
-            error("Incorrect login credential", res, acceptHTML, args);
+            args["loginError"] = "Incorrect username or password";
+            render("./templates/home.html", res, acceptHTML, args);
         }
     } catch (e) {
-        error(e, res, acceptHTML, args);
+        args["loginError"] = "Unexpected error, please try again";
+        render("./templates/home.html", res, acceptHTML, args);
     } finally {
         await client.close();
         // console.log("Connection closed");

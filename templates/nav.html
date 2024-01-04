@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-sm navbar-light bg-light">
     <div class="container-xl">
-      <a class="navbar-brand" href="./">Recipes</a>
+      <a class="navbar-brand" href="/">Recipes</a>
       <button
         class="navbar-toggler d-lg-none"
         type="button"
@@ -20,6 +20,9 @@
           <li class="nav-item">
             <a class="nav-link" href="#">My recipes</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/newRecipe.html">Upload recipe</a>
+          </li>
         </ul>
         {{ifnot:login}}
         <form 
@@ -29,25 +32,38 @@
           novalidate
         >
           <div class="row g-1">
-            <div class="col-12 col-sm-4">
-              <input
-                class="form-control me-sm-2"
-                type="text"
-                name="username"
-                placeholder="Username"
-                autocomplete="on"
-                required
-              />
-            </div>
-            <div class="col-12 col-sm-4">
-              <input
-                class="form-control me-sm-2"
-                type="password"
-                name="password"
-                placeholder="Password"
-                autocomplete="on"
-                required
-              />
+            <div class="col-12 col-sm-8">
+              <div class="row g-1">
+                <div class="col-12 col-sm-6">
+                  <input
+                    class="form-control me-sm-2"
+                    type="text"
+                    name="username"
+                    placeholder="Username"
+                    autocomplete="on"
+                    required
+                  />
+                </div>
+                <div class="col-12 col-sm-6">
+                  <input
+                    class="form-control me-sm-2"
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    autocomplete="on"
+                    required
+                  />
+                </div>
+              </div>
+              {{if:loginError}}
+              <div class="row">
+                <div class="col-12\">
+                  <div class="alert alert-danger text-center p-0">
+                    {{replace:loginError}}
+                  </div>
+                </div>
+              </div>
+              {{endif}}
             </div>
             <div class="col-12 col-sm-2">
               <input
