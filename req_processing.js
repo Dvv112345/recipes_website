@@ -54,7 +54,13 @@ function getPath(req)
     // console.log(req.headers);
     reqURL = new url.URL(reqURL, "http://placeholder");
     let path = "./templates"+reqURL.pathname;
-    return path;
+    let searchParams = reqURL.searchParams;
+    const dataObj = {}
+    for (let pair of searchParams)
+    {
+        dataObj[pair[0]] = pair[1];
+    }
+    return {"path": path, "searchParam": dataObj};
 }
 
 function keepAlive(req, res)

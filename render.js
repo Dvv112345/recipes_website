@@ -1,6 +1,8 @@
 const LineByLine = require('line-by-line');
 const events = require('events');
 const fs = require("fs");
+const { MongoClient} = require('mongodb');
+const uri = fs.readFileSync("mongoUri.txt", 'utf8');
 
 module.exports.render = render;
 module.exports.error = error;
@@ -22,6 +24,7 @@ async function parseLine(data, res, type, rl, write, args)
     // write is a flag that indicates whether the current line is in an if block that evaluates to false.
     // {{extend:file}} can be used to load the specified file in place of the instruction
     // {{if:arg}} can be used to load the content between {{if:arg}} and {{endif}} if args[arg] is true 
+    // {{for:arg:file}} extend file in a for loop from mongoDB db.collection(args[arg]["collection"]).findOne(args[arg])
     let instructionStart = data.indexOf("{{");
     let instructionEnd = data.indexOf("}}");
     let instruction = [];
@@ -108,6 +111,16 @@ async function parseLine(data, res, type, rl, write, args)
         {
             return 0;
         }
+        if (instruction.length == 3 && instruction[0] == "for")
+        {
+            if (args[instruction[1]])
+            {
+                rl.pause();
+                await forEach(instruction[2], res, type, instruction[1], args)
+                rl.resume();
+            }
+            return 0
+        }
         res.write(data);
         res.write("\r\n");
         return 0;
@@ -187,4 +200,39 @@ function image(path, res, acceptHTML, args)
             res.end(content);
         }  
     })
+}
+
+async function forEach(path, res, type, searchParam, args)
+{
+    // path = the file path to be rendered
+    // searchParam = the property name of args that store the searchParam
+    // args = All the arguments for rendering
+    const client = new MongoClient(uri);
+    // console.log("forEach: ", path)
+    try {
+        // Connect to the MongoDB cluster
+        await client.connect();
+        // Make the appropriate DB calls
+        // console.log(`Connected: ${args[searchParam][1]}`)
+        // console.log(args[searchParam][0])
+        let result = client.db("recipes").collection(args[searchParam][1]).find(args[searchParam][0]);
+        for await (let doc of result)
+        {
+            if (doc.hasOwnProperty("duration"))
+            {
+                let totalMinutes = doc["duration"];
+                doc["durationHours"] = Math.floor(totalMinutes / 60);
+                doc["durationMinutes"] = totalMinutes % 60;
+            }
+            let newArgs = Object.assign(args, doc);
+            await render(path, res, type, newArgs, true);
+            console.log(doc);
+        }
+
+    } catch (e) {
+        console.log("Error: ", e);
+    } finally {
+        await client.close();
+        // console.log("End of forEach");
+    }
 }

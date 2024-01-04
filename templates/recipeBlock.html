@@ -1,0 +1,22 @@
+<div class="col-12 col-md-6 col-lg-4 my-1">
+    <div class="card">
+        <div class="card-body">
+        <h3 class="card-title text-center">{{replace:name}}</h3>
+        <p class="card-text px-5">
+            Cuisine: {{replace:cuisine}}
+            <br>
+            Difficulty: {{replace:difficulty}}
+            <br>
+            Duration: 
+            {{if:durationHours}}
+            {{replace:durationHours}} hour 
+            {{endif}}
+            {{replace:durationMinutes}} minutes
+            <br>
+            Favorite count: {{replace:favCount}}
+            <br>
+            Uploaded by: {{replace:owner}}
+        </p>
+        </div>
+    </div>
+</div>

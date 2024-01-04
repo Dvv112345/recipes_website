@@ -16,10 +16,10 @@ const {Session, SessionList, checkInactive} = require("./session.js");
 
 const sessions = new SessionList();
 
-function getRequest(req, res, args)
+async function getRequest(req, res, args)
 {
     // Process GET request
-    let path = getPath(req);
+    let {path, searchParam} = getPath(req);
     console.log(`Get ${path}`);
     let result = typeCheck(req, res);
     if (result.error)
@@ -35,7 +35,13 @@ function getRequest(req, res, args)
             res.setHeader("set-cookie", cookieMessage);
             args["login"] = false;
         }
-        render("./templates/home.html", res, result.acceptHTML, args);
+        path = "./templates/home.html";
+    }
+    if (path == "./templates/home.html")
+    {
+        searchParam["public"] = true;
+        args["recipes"] = [searchParam, "recipe"];
+        render(path, res, result.acceptHTML, args);
         return;
     }
     if (result.type[0] == "image")
@@ -214,8 +220,6 @@ function resolveRequest(req, res)
     {
         postRequest(req, res, args);
     }
-    console.log(sessions);
-
 }
 
 const server = http.createServer(resolveRequest);

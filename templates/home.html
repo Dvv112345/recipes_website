@@ -11,64 +11,7 @@
       </form>
       <!-- Receipe cards -->
       <div class="row">
-        <div class="col-12 col-md-6 col-lg-4 my-1">
-          <a href="/register.html" class="cardLink">
-            <div class="card">
-              <div class="card-body">
-                <h3 class="card-title text-center">Title</h3>
-                <p class="card-text px-5">Text</p>
-              </div>
-            </div>
-          </a>
-        </div>
-        <div class="col-12 col-md-6 col-lg-4 my-1">
-          <div class="card">
-            <div class="card-body">
-              <h3 class="card-title text-center">Title</h3>
-              <p class="card-text px-5">Text</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-md-6 col-lg-4 my-1">
-          <div class="card">
-            <div class="card-body">
-              <h3 class="card-title text-center">Title</h3>
-              <p class="card-text px-5">Text</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-md-6 col-lg-4 my-1">
-          <div class="card">
-            <div class="card-body">
-              <h3 class="card-title text-center">Title</h3>
-              <p class="card-text px-5">
-                Cuisine: foo
-                <br>
-                Difficulty: bar
-                <br>
-                Duration: 1 hour
-                <br>
-                Favorite count: 10
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-md-6 col-lg-4 my-1">
-          <div class="card">
-            <div class="card-body">
-              <h3 class="card-title text-center">Title</h3>
-              <p class="card-text px-5">Text</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-md-6 col-lg-4 my-1">
-          <div class="card">
-            <div class="card-body">
-              <h3 class="card-title text-center">Title</h3>
-              <p class="card-text px-5">Text</p>
-            </div>
-          </div>
-        </div>
+        {{for:recipes:templates/recipeBlock.html}}
       </div>
     </div>
   </body>
