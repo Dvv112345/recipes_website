@@ -10,30 +10,121 @@
           <div class="row">
             <div class="col-0 col-md-4"></div>
             <div class="col-md-4 mb-3">
-              <input type="text" class="form-control registerInput" id="regUsername" name="username" placeholder="Username" autocomplete="on" required>
-              <div class="invalid-feedback">
-                Please enter a username.
+              <div class="form-floating">
+                <input type="text" class="form-control" id="name" name="name" placeholder="Name" autocomplete="off" required>
+                <label for="name">Recipe Name</label>
+                <div class="invalid-feedback">
+                  Please enter a name.
+                </div>
               </div>
             </div>
           </div>
           <div class="row">
             <div class="col-0 col-md-4"></div>
             <div class="col-md-4 mb-3">
-              <input type="password" class="form-control registerInput" id="regPassword" name="password" 
-              placeholder="Password" pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}" required>
-              <div class="invalid-feedback feedback">
-                <p id="length">At least 8 characters</p>
-                <p id="letter">Contain at least one letter</p>
-                <p id="number">Contain at least one number</p>
+              <div class="form-floating">
+                <select name="cuisine" id="cuisine" class="form-select" required>
+                  <option value="Chinese">Chinese</option>
+                  <option value="French">French</option>
+                  <option value="Italian">Italian</option>
+                  <option value="Japanese">Japanese</option>
+                  <option value="Greek">Greek</option>
+                  <option value="Spanish">Spanish</option>
+                  <option value="Mediterranean">Mediterranean</option>
+                  <option value="Lebanese">Lebanese</option>
+                  <option value="Moroccan">Moroccan</option>
+                  <option value="Turkish">Turkish</option>
+                  <option value="Thai">Thai</option>
+                  <option value="Indian">Indian</option>
+                  <option value="Cajun">Cajun</option>
+                  <option value="Mexican">Mexican</option>
+                  <option value="Caribbean">Caribbean</option>
+                  <option value="German">German</option>
+                  <option value="Caribbean">Caribbean</option>
+                  <option value="Russian">Russian</option>
+                  <option value="Hungarian">Hungarian</option>
+                  <option value="American">American</option>
+                  <option value="Fusion">Fusion</option>
+                  <option value="Creative">Creative</option>
+                  <option value="Other">Other</option>
+                </select>
+                <label for="cuisine">Cuisine type</label>
+              </div>
+              
+              <div class="invalid-feedback">
+                Please specify which cuisine this is.
               </div>
             </div>
           </div>
           <div class="row">
             <div class="col-0 col-md-4"></div>
             <div class="col-md-4 mb-3">
-              <input type="password" class="form-control registerInput" id="regPassword2" name="password2" placeholder="Repeat Password" required>
+              <div class="form-floating">
+                <select name="difficulty" id="difficulty" class="form-select" required>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+                <label for="difficulty">Recipe difficulty</label>
+              </div>
+              
               <div class="invalid-feedback">
-                Passwords do not match
+                Please specify which cuisine this is.
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-0 col-md-4"></div>
+            <div class="col-md-4 mb-3">
+              <h6>Recipe duration</h6>
+              <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                  <div class="form-floating">
+                    <input type="number" class="form-control" id="durationHour" name="durationHour" placeholder="Duration" autocomplete="off" value="0" required>
+                    <label for="durationHour">Hours</label>
+                    <div class="invalid-feedback">
+                      Please enter the duration.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <input type="number" class="form-control" id="durationMinute" name="durationMinute" placeholder="Duration" autocomplete="off" value="0" required>
+                    <label for="durationMinute">Minutes</label>
+                    <div class="invalid-feedback">
+                      Please enter the duration.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-0 col-md-4"></div>
+            <div class="col-md-4 mb-3">
+              <h6>Materials</h6>
+                <div class="form-floating">
+                  <input type="text" class="form-control" id="material1" name="material" placeholder="Material" autocomplete="off">
+                  <label for="material1">Material</label>
+                </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-0 col-md-4"></div>
+            <div class="col-md-4 mb-3">
+              <h6>Steps</h6>
+                <div class="form-floating">
+                  <input type="text" class="form-control" id="step1" name="step" placeholder="Step" autocomplete="off">
+                  <label for="step1">Step</label>
+                </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-0 col-md-4"></div>
+            <div class="col-md-4 mb-3">
+              <div class="form-check form-switch">
+                <input type="checkbox" class="form-check-input" id="public" name="public" value="true" autocomplete="off">
+                <label class="form-check-label" for="public">Make public</label>
               </div>
             </div>
           </div>
@@ -41,12 +132,11 @@
             <div class="col-0 col-md-4">
             </div>
             <div class="col-md-4">
-              <button class="btn btn-outline-success w-100" type="submit">Submit form</button>
+              <button class="btn btn-outline-success w-100" type="submit">Upload</button>
             </div>
           </div>
         </form>
       </div>
     </div>
-    <script src="public/registerValidate.js"></script>
   </body>
 </html>

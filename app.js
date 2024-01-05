@@ -113,7 +113,7 @@ async function register(formEntries, res, acceptHTML, args)
             return;
         }
         // Hash password
-        let insertEntry = {"username": formEntries.username};
+        let insertEntry = {"username": formEntries.username, "favoriteRecipes":[]};
         insertEntry["passwordHash"] = await bcrypt.hash(formEntries.password, saltRounds);
         await collection.insertOne(insertEntry).catch(
             (err)=>{

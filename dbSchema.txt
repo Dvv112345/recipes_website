@@ -1,0 +1,21 @@
+users
+{
+    _id,
+    passwordHash: string,
+    username: string,
+    favoriteRecipes: array of _id
+}
+
+recipe
+{
+    _id,
+    name: string,
+    cuisine: string,
+    difficulty: string,
+    duration: int,
+    favCount: int,
+    material: array of string,
+    steps: array of string,
+    public: boolean,
+    owner: string
+}
