@@ -103,20 +103,36 @@
             <div class="col-0 col-md-4"></div>
             <div class="col-md-4 mb-3">
               <h6>Materials</h6>
-                <div class="form-floating">
-                  <input type="text" class="form-control" id="material1" name="material" placeholder="Material" autocomplete="off">
+              <div id="materials">
+                <div class="form-floating mb-1">
+                  <input type="text" class="form-control" id="material1" name="material" placeholder="Material" required autocomplete="off">
                   <label for="material1">Material</label>
+                  <div class="invalid-feedback">
+                    Please enter the materials used in this recipe.
+                  </div>
                 </div>
+                <button type="button" class="btn">Add material</button>
+              </div>
             </div>
           </div>
           <div class="row">
             <div class="col-0 col-md-4"></div>
             <div class="col-md-4 mb-3">
               <h6>Steps</h6>
-                <div class="form-floating">
+              <div id="steps">
+                <div class="form-floating mb-1">
+                  <input type="text" class="form-control" id="step0" name="step" placeholder="Step" autocomplete="off" required>
+                  <label for="step0">Step</label>
+                  <div class="invalid-feedback">
+                    Please enter the steps for this recipe.
+                  </div>
+                </div>
+                <div class="form-floating mb-1">
                   <input type="text" class="form-control" id="step1" name="step" placeholder="Step" autocomplete="off">
                   <label for="step1">Step</label>
                 </div>
+              </div>
+              <button type="button" class="btn">Add step</button>
             </div>
           </div>
           <div class="row">

@@ -212,7 +212,15 @@ async function postRequest(req, res, args)
         const parsed = new URLSearchParams(query);
         for (let pair of parsed.entries())
         {
-            formEntries[pair[0]] = pair[1];
+            if (formEntries.hasOwnProperty(pair[0]))
+            {
+                formEntries[pair[0]] = [formEntries[pair[0]]]
+                formEntries[pair[0]].push(pair[1])
+            }
+            else
+            {
+                formEntries[pair[0]] = pair[1];
+            }
         }
         console.log("POST request query: ", formEntries)
     })
