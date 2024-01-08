@@ -136,6 +136,7 @@ async function render(path, res, type, args=null, recurring=false, callByError=f
     // recurring indicates whether this render function is called by another render function
     
     console.log("Trying to render: ", path, ". Recurring = ", recurring);
+    console.log("Args: ", args);
     let write = 0;
 
     try{

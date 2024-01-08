@@ -170,7 +170,7 @@ async function login(formEntries, res, acceptHTML, args)
         {
             console.log("Correct login credential");
             args["login"] = true;
-            args["formEntries"] = formEntries.username
+            args["username"] = formEntries.username
             res.setHeader("set-cookie", sessions.addSession(formEntries.username));
             args["recipes"] = [{"public":true}, "recipe"];
             render("./templates/home.html", res, acceptHTML, args);
@@ -214,8 +214,13 @@ async function postRequest(req, res, args)
         {
             if (formEntries.hasOwnProperty(pair[0]))
             {
-                formEntries[pair[0]] = [formEntries[pair[0]]]
+                if (!Array.isArray(formEntries[pair[0]]))
+                {
+                    console.log("Create array. Type = ", typeof(formEntries[pair[0]]));
+                    formEntries[pair[0]] = [formEntries[pair[0]]]
+                }
                 formEntries[pair[0]].push(pair[1])
+                
             }
             else
             {

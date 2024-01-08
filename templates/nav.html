@@ -20,9 +20,11 @@
           <li class="nav-item">
             <a class="nav-link" href="#">My recipes</a>
           </li>
+          {{if:login}}
           <li class="nav-item">
             <a class="nav-link" href="/newRecipe.html">Upload recipe</a>
           </li>
+          {{endif}}
         </ul>
         {{ifnot:login}}
         <form 
@@ -69,6 +71,7 @@
               <input
                 class="btn btn-outline-success my-1 my-md-0 w-100"
                 type="submit"
+                value="Login"
               />
             </div>
             <div class="col-12 col-md-2">
