@@ -14,3 +14,17 @@
     margin-left: 12px;
     margin-right: -12px;
 }
+
+.addNew:focus {
+    outline-width: 0.25rem;
+    outline-style: solid;
+    outline-color: rgba(13, 110, 253, 0.25);
+}
+
+.addNew:hover {
+    color: gray;
+}
+
+textarea.highArea {
+    height: 5rem !important;
+}

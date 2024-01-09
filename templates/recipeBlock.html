@@ -12,9 +12,11 @@
                 {{if:durationHours}}
                 {{replace:durationHours}} hour 
                 {{endif}}
+                {{if:durationMinutes}}
                 {{replace:durationMinutes}} minutes
+                {{endif}}
                 <br>
-                Favorite count: {{replace:favCount}}
+                Likes: {{replace:favCount}}
                 <br>
                 Uploaded by: {{replace:owner}}
             </p>

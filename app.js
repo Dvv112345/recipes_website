@@ -1,20 +1,75 @@
 const http = require("http");
 const events = require('events');
-const { MongoClient} = require('mongodb');
+const { MongoClient, ObjectId} = require('mongodb');
 const fs = require("fs")
 const bcrypt = require("bcrypt")
+
+const {typeCheck, getPath, keepAlive} = require("./req_processing.js");
+const {render, error, returnWhole} = require("./render.js");
+const {Session, SessionList, checkInactive} = require("./session.js");
 
 const uri = fs.readFileSync("mongoUri.txt", 'utf8');
 const port = 8008;
 const saltRounds = 10;
 // The number of ms after which an session will be considered inactive and terminated. 
 const sessionExpiry = 600000;
+const client = new MongoClient(uri);
 
-const {typeCheck, getPath, keepAlive} = require("./req_processing.js");
-const {render, error, image} = require("./render.js");
-const {Session, SessionList, checkInactive} = require("./session.js");
+
 
 const sessions = new SessionList();
+
+async function recipePage(target, res, acceptHTML, args)
+{
+    try {
+        // console.log("Connecting to database");
+        await client.connect();
+        // console.log("Connected to database");
+        // Insert recipe
+        let collection = client.db("recipes").collection("recipe")
+        let doc = await collection.findOne({_id:new ObjectId(target)});
+        if (!doc)
+        {
+            error("404 Not Found", res, acceptHTML, args);
+        }
+        let totalMinutes = doc["duration"];
+        doc["durationHours"] = Math.floor(totalMinutes / 60);
+        doc["durationMinutes"] = totalMinutes % 60;
+        if(doc["public"])
+        {
+            doc["public"] = "Public"
+        }
+        else
+        {
+            if (args["username"] != doc["owner"])
+            {
+                error("This is a private recipe, you need to log in as the uploader.", res, acceptHTML, args);
+                return;
+            }
+            doc["public"] = "Private"
+        }
+        let mList = "";
+        for (let m of doc["materials"])
+        {
+            mList = mList.concat(`<li>${m}</li>`);
+        }
+        doc["materials"] = mList
+        let sList = "";
+        for (let s of doc["steps"])
+        {
+            sList = sList.concat(`<li>${s}</li>`);
+        }
+        doc["steps"] = sList
+        args = Object.assign(args, doc);
+        render("./templates/recipe.html", res, acceptHTML, args);
+    } catch (e) {
+        console.log(e);
+        error("An unexpected error occured, please try again", res, acceptHTML, args);
+    } finally {
+        await client.close();
+        // console.log("Connection closed");
+    }
+}
 
 async function getRequest(req, res, args)
 {
@@ -27,7 +82,13 @@ async function getRequest(req, res, args)
         error(result.errorInfo, res, result.acceptHTML, args);
         return;
     }
-    if (path == "./templates/logout.html")
+    let pathComp = path.split("/");
+    if (pathComp.length == 4 && pathComp[2] == "recipe")
+    {
+        recipePage(pathComp[3], res, result.acceptHTML, args);
+        return;
+    }
+    else if (path == "./templates/logout.html")
     {
         let cookieMessage = sessions.removeSession(args["sessionID"]);
         if (cookieMessage)
@@ -44,12 +105,15 @@ async function getRequest(req, res, args)
         render(path, res, result.acceptHTML, args);
         return;
     }
-    if (result.type[0] == "image")
+    if (result.type[1] == "html" || (result.type[0] == "*" && result.type[1] == "*"))
     {
-        image(path, res, result.acceptHTML, args)
-        return;
+        render(path, res, result.acceptHTML, args);
     }
-    render(path, res, result.acceptHTML, args);
+    else
+    {
+        returnWhole(path, res, result.acceptHTML, args)
+    }
+    
 }
 
 
@@ -57,7 +121,7 @@ function checkEntries(formEntries, res, acceptHTML, requiredProperties, args)
 {
     for (let property of requiredProperties)
     {
-        if (!formEntries.hasOwnProperty(property))
+        if (!formEntries.hasOwnProperty(property) || !formEntries[property])
         {
             return false;
         }
@@ -72,15 +136,13 @@ async function register(formEntries, res, acceptHTML, args)
     let requiredProperties = ["username", "password", "password2"];
     if (!checkEntries(formEntries, res, acceptHTML, requiredProperties, args))
     {
-        args["registerError"] = "<div class='text-center alert alert-danger'>\
-        Please enter username, password, and reenter password</div>"
+        args["registerError"] = "Please enter username, password, and reenter password"
         render("templates/register.html", res, acceptHTML, args);
         return;
     }
     if (formEntries.password.length < 8 || !formEntries.password.match(/[a-zA-Z]/) || !formEntries.password.match(/\d/))
     {
-        args["registerError"] = "<div class='text-left alert alert-danger'>\
-        \nPassword do not meet the requirements:\
+        args["registerError"] = "<div class='text-start'>Password do not meet the requirements:\
         \n<ul><li>Password needs to have at least 8 characters</li>\
         \n<li>Password needs to contain at least one letter</li>\
         \n<li>Password needs to contain at least one number</li></ul></div>";
@@ -89,14 +151,10 @@ async function register(formEntries, res, acceptHTML, args)
     }
     if (formEntries.password !== formEntries.password2)
     {
-        args["registerError"] = "<div class='text-center alert alert-danger'>\
-        Passwords do not match</div>";
+        args["registerError"] = "Passwords do not match";
         render("templates/register.html", res, acceptHTML, args);
         return;
     }
-    
-    // Connect to database
-    const client = new MongoClient(uri);
 
     try {
         // console.log("Connecting to database");
@@ -107,8 +165,7 @@ async function register(formEntries, res, acceptHTML, args)
         let result = await collection.findOne({"username": formEntries.username});
         if (result)
         {
-            args["registerError"] = "<div class='text-center alert alert-danger'>\
-            Username already exists</div>";
+            args["registerError"] = "Username already exists";
             render("templates/register.html", res, acceptHTML, args);
             return;
         }
@@ -117,9 +174,8 @@ async function register(formEntries, res, acceptHTML, args)
         insertEntry["passwordHash"] = await bcrypt.hash(formEntries.password, saltRounds);
         await collection.insertOne(insertEntry).catch(
             (err)=>{
-                args["registerError"] = "<div class='text-center alert alert-danger'>\
-                Unexpected error occured, please try again.</div>"
-                console.err(err);
+                args["registerError"] = "An unexpected error occured, please try again."
+                console.log(err);
                 render("templates/register.html", res, acceptHTML, args);
                 return;
             });
@@ -129,7 +185,9 @@ async function register(formEntries, res, acceptHTML, args)
         args["recipes"] = [{"public":true}, "recipe"];
         render("./templates/home.html", res, acceptHTML, args);
     } catch (e) {
-        error(e, res, acceptHTML, args);
+        console.log(e);
+        args["registerError"] = "An unexpected error occured, please try again."
+        render("templates/register.html", res, acceptHTML, args);
     } finally {
         await client.close();
         // console.log("Connection closed");
@@ -148,8 +206,6 @@ async function login(formEntries, res, acceptHTML, args)
         render("./templates/home.html", res, acceptHTML, args);
         return;
     }
-    // Connect to database
-    const client = new MongoClient(uri);
   
     try {
         // console.log("Connecting to database");
@@ -172,7 +228,6 @@ async function login(formEntries, res, acceptHTML, args)
             args["login"] = true;
             args["username"] = formEntries.username
             res.setHeader("set-cookie", sessions.addSession(formEntries.username));
-            args["recipes"] = [{"public":true}, "recipe"];
             render("./templates/home.html", res, acceptHTML, args);
             
         }
@@ -182,12 +237,94 @@ async function login(formEntries, res, acceptHTML, args)
             render("./templates/home.html", res, acceptHTML, args);
         }
     } catch (e) {
-        args["loginError"] = "Unexpected error, please try again";
+        console.log(e);
+        args["loginError"] = "An unexpected error occured, please try again";
         render("./templates/home.html", res, acceptHTML, args);
     } finally {
         await client.close();
         // console.log("Connection closed");
     }
+
+}
+
+async function addRecipe(formEntries, res, acceptHTML, args)
+{
+    res.statusCode = 200;
+    // Check if the user is logged in
+    if (!args["login"])
+    {
+        args["addRecipeError"] = "You need to login before you can upload recipes";
+        render("./templates/addRecipe.html", res, acceptHTML, args);
+        return;
+    }
+    // Check if all fields are present and in the required format
+    let requiredProperties = ["name", "cuisine", "difficulty", "durationHour", "durationMinute", "materials", "steps"];
+    if (!checkEntries(formEntries, res, acceptHTML, requiredProperties, args))
+    {
+        args["addRecipeError"] = "Please complete all the fields";
+        render("./templates/addRecipe.html", res, acceptHTML, args);
+        return;
+    }
+    let hours = parseInt(formEntries["durationHour"]);
+    let minutes = parseInt(formEntries["durationMinute"]);
+    if (isNaN(hours) || isNaN(minutes) || hours < 0 || minutes < 0)
+    {
+        args["addRecipeError"] = "The duration hours and minutes should be positive integers";
+        render("./templates/addRecipe.html", res, acceptHTML, args);
+        return;
+    }
+    // Modify the input format to conform to database schema.
+    // Convert duration to pure minutes
+    let duration = hours*60 + minutes;
+    delete formEntries["durationHour"];
+    delete formEntries["durationMinute"];
+    formEntries["duration"] = duration;
+    if (formEntries.hasOwnProperty("public"))
+    {
+        formEntries["public"] = true;
+    }
+    else
+    {
+        formEntries["public"] = false;
+    }
+    // Turn materials and steps to array
+    if (!Array.isArray(formEntries["materials"]))
+    {
+        formEntries["materials"] = [formEntries["materials"]]
+    }
+    if (!Array.isArray(formEntries["steps"]))
+    {
+        formEntries["steps"] = [formEntries["steps"]]
+    }
+    // Add owner and favCount
+    formEntries["owner"] = args["username"];
+    formEntries["favCount"] = 0;
+    // console.log("Recipe: ", formEntries)
+    try {
+        // console.log("Connecting to database");
+        await client.connect();
+        // console.log("Connected to database");
+        // Insert recipe
+        let collection = client.db("recipes").collection("recipe")
+        await collection.insertOne(formEntries).catch(
+            (err)=>{
+                args["addRecipeError"] = "An unexpected error occured, please try again."
+                console.log(err);
+                render("./templates/addRecipe.html", res, acceptHTML, args);
+                return;
+            });
+        console.log("Recipe inserted");
+        args["recipes"] = [{"public":true}, "recipe"];
+        render("./templates/home.html", res, acceptHTML, args);
+    } catch (e) {
+        console.log(e);
+        args["addRecipeError"] = "An unexpected error occured, please try again";
+        render("./templates/addRecipe.html", res, acceptHTML, args);
+    } finally {
+        await client.close();
+        // console.log("Connection closed");
+    }
+    
 
 }
 
@@ -212,11 +349,10 @@ async function postRequest(req, res, args)
         const parsed = new URLSearchParams(query);
         for (let pair of parsed.entries())
         {
-            if (formEntries.hasOwnProperty(pair[0]))
+            if (formEntries.hasOwnProperty(pair[0]) && pair[1])
             {
                 if (!Array.isArray(formEntries[pair[0]]))
                 {
-                    console.log("Create array. Type = ", typeof(formEntries[pair[0]]));
                     formEntries[pair[0]] = [formEntries[pair[0]]]
                 }
                 formEntries[pair[0]].push(pair[1])
@@ -239,9 +375,13 @@ async function postRequest(req, res, args)
     {
         login(formEntries, res, result.acceptHTML, args);
     }
+    else if (req.url == "/addRecipe.html")
+    {
+        addRecipe(formEntries, res, result.acceptHTML, args);
+    }
     else
     {
-        error("Invalid POST request", res, result.acceptHTML, args);
+        error("404 Not Found. Invalid post request.", res, result.acceptHTML, args);
     }
 }
 
@@ -261,6 +401,7 @@ function resolveRequest(req, res)
         postRequest(req, res, args);
     }
 }
+
 
 const server = http.createServer(resolveRequest);
 server.listen(port, ()=>console.log("Server started at ", server.address()));

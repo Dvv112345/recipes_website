@@ -5,17 +5,19 @@ function addNew(divId)
 {
     let counter = 0;
     let text = "";
-    if (divId == "material")
+    if (divId == "materials")
     {
         material += 1;
         counter = material;
         text = "Material"
+        inputType = "input"
     }
-    else if (divId == "step")
+    else if (divId == "steps")
     {
         step += 1;
         counter = step;
         text = "Step"
+        inputType = "textarea"
     }
     let target = document.getElementById(divId);
     let row = document.createElement("div");
@@ -23,9 +25,16 @@ function addNew(divId)
     row.id = `${divId}Row${counter}`;
     let floatingForm = document.createElement("div");
     floatingForm.className = "form-floating col-9";
-    let input = document.createElement("input");
-    input.type = "text";
-    input.className = "form-control";
+    let input = document.createElement(inputType);
+    if (divId == "materials")
+    {
+        input.type = "text";
+        input.className = "form-control";
+    }
+    else
+    {
+        input.className = "form-control highArea"
+    }
     input.id = `${divId}${counter}`;
     input.name = divId;
     input.setAttribute("placeholder", divId);

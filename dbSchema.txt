@@ -14,7 +14,7 @@ recipe
     difficulty: string,
     duration: int,
     favCount: int,
-    material: array of string,
+    materials: array of string,
     steps: array of string,
     public: boolean,
     owner: string

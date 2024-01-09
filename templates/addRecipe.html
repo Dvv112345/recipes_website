@@ -6,7 +6,7 @@
     <div class="container-xxl">
       <h2 class="text-center">Upload a new recipe </h2>
       <div class="container">
-        <form action="newRecipe.html" method="POST" class="needs-validation" id="registerForm" novalidate>
+        <form action="addRecipe.html" method="POST" class="needs-validation" id="registerForm" novalidate>
           <div class="row">
             <div class="col-0 col-lg-4"></div>
             <div class="col-lg-4 mb-3">
@@ -80,19 +80,19 @@
               <div class="row mb-3">
                 <div class="col-6">
                   <div class="form-floating">
-                    <input type="number" class="form-control" id="durationHour" name="durationHour" placeholder="Duration" autocomplete="off" value="0" required>
+                    <input type="number" class="form-control" id="durationHour" name="durationHour" placeholder="Duration" autocomplete="off" value="0" step="1" min="0" required>
                     <label for="durationHour">Hours</label>
                     <div class="invalid-feedback">
-                      Please enter the duration.
+                      Please enter the hours as an integer.
                     </div>
                   </div>
                 </div>
                 <div class="col-6">
                   <div class="form-floating">
-                    <input type="number" class="form-control" id="durationMinute" name="durationMinute" placeholder="Duration" autocomplete="off" value="0" required>
+                    <input type="number" class="form-control" id="durationMinute" name="durationMinute" placeholder="Duration" autocomplete="off" value="0" step="1" min="0" required>
                     <label for="durationMinute">Minutes</label>
                     <div class="invalid-feedback">
-                      Please enter the duration.
+                      Please enter the minutes as an integer
                     </div>
                   </div>
                 </div>
@@ -103,10 +103,10 @@
             <div class="col-0 col-lg-4"></div>
             <div class="col-lg-4 mb-3">
               <h6>Materials</h6>
-              <div id="material">
+              <div id="materials">
                 <div class="row g-1 mb-1" id="materialRow1">
                   <div class="form-floating col-9">
-                    <input type="text" class="form-control" id="material1" name="material" placeholder="Material" required autocomplete="off">
+                    <input type="text" class="form-control" id="material1" name="materials" placeholder="Material" required autocomplete="off">
                     <label for="material1">Material</label>
                   </div>
                   <div class="col-3">
@@ -114,25 +114,25 @@
                   </div>
                 </div>
               </div>
-              <button type="button" class="btn" onclick="addNew('material')">Add material</button>
+              <button type="button" class="btn addNew" onclick="addNew('materials')">Add material</button>
             </div>
           </div>
           <div class="row">
             <div class="col-0 col-lg-4"></div>
             <div class="col-lg-4 mb-3">
               <h6>Steps</h6>
-              <div id="step">
+              <div id="steps">
                 <div class="row g-1 mb-1" id="stepRow1">
                   <div class="form-floating col-9">
-                    <input type="text" class="form-control" id="step1" name="step" placeholder="Step" autocomplete="off" required>
+                    <textarea class="form-control highArea" id="step1" name="steps" placeholder="Step" autocomplete="off" required></textarea>
                     <label for="step1">Step</label>
                   </div>
                   <div class="col-3">
-                    <button type="button" class="btn btn-outline-danger h-100 w-100" onclick="deleteInput(stepRow1, 'step')">Delete</button>
+                    <button type="button" class="btn btn-outline-danger h-100 w-100" onclick="deleteInput(stepRow1, 'steps')">Delete</button>
                   </div>
                 </div>
               </div>
-              <button type="button" class="btn" onclick="addNew('step')">Add step</button>
+              <button type="button" class="btn addNew" onclick="addNew('steps')">Add step</button>
             </div>
           </div>
           <div class="row">
@@ -147,11 +147,22 @@
           <div class="row">
             <div class="col-0 col-lg-4">
             </div>
-            <div class="col-lg-4">
+            <div class="col-lg-4 mb-3">
               <button class="btn btn-outline-success w-100" type="submit">Upload</button>
             </div>
           </div>
         </form>
+        {{if:addRecipeError}}
+        <div class="row mb-3">
+          <div class="col-0 col-md-4">
+          </div>
+          <div class="col-md-4">
+            <div class="text-center alert alert-danger">
+              {{replace:addRecipeError}}
+            </div>
+          </div>
+        </div>
+        {{endif}}
       </div>
     </div>
     <script src="static/addRecipeToggle.js"></script>

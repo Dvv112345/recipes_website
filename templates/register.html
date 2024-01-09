@@ -7,9 +7,9 @@
       <h2 class="text-center">Register a new account </h2>
       <div class="container">
         <form action="register.html" method="POST" class="needs-validation" id="registerForm" novalidate>
-          <div class="row">
+          <div class="row mb-3">
             <div class="col-0 col-md-4"></div>
-            <div class="col-md-4 mb-3">
+            <div class="col-md-4">
               <div class="form-floating">
                 <input type="text" class="form-control registerInput" id="regUsername" name="username" placeholder="Username" autocomplete="on" required>
                 <label for="regUsername">Username</label>
@@ -19,9 +19,9 @@
               </div>
             </div>
           </div>
-          <div class="row">
+          <div class="row mb-3">
             <div class="col-0 col-md-4"></div>
-            <div class="col-md-4 mb-3">
+            <div class="col-md-4">
               <div class="form-floating">
                 <input type="password" class="form-control registerInput" id="regPassword" name="password" 
                 placeholder="Password" pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}" required>
@@ -34,9 +34,9 @@
               </div>
             </div>
           </div>
-          <div class="row">
+          <div class="row mb-3">
             <div class="col-0 col-md-4"></div>
-            <div class="col-md-4 mb-3">
+            <div class="col-md-4">
               <div class="form-floating">
                 <input type="password" class="form-control registerInput" id="regPassword2" name="password2" placeholder="Repeat Password" required>
                 <label for="regPassword2">Repeat Password</label>
@@ -46,7 +46,7 @@
               </div>
             </div>
           </div>
-          <div class="row">
+          <div class="row mb-3">
             <div class="col-0 col-md-4">
             </div>
             <div class="col-md-4">
@@ -54,11 +54,13 @@
             </div>
           </div>
           {{if:registerError}}
-          <div class="row mt-3">
+          <div class="row mb-3">
             <div class="col-0 col-md-4">
             </div>
             <div class="col-md-4">
+              <div class='text-center alert alert-danger'>
                 {{replace:registerError}}
+              </div>
             </div>
           </div>
           {{endif}}

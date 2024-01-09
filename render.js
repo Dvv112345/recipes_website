@@ -6,7 +6,7 @@ const uri = fs.readFileSync("mongoUri.txt", 'utf8');
 
 module.exports.render = render;
 module.exports.error = error;
-module.exports.image = image;
+module.exports.returnWhole = returnWhole;
 
 function errorHeader(res)
 {
@@ -176,7 +176,7 @@ async function error(err, res, type, args=null, cyclic=false)
     if (cyclic || !type)
     {
         console.log("Response sent");
-        res.end(err);
+        res.end("404 Not Found");
         return;
     }
     else
@@ -188,12 +188,12 @@ async function error(err, res, type, args=null, cyclic=false)
 }
 
 
-function image(path, res, acceptHTML, args)
+function returnWhole(path, res, acceptHTML, args)
 {
     fs.readFile(path, (err, content)=>{
         if (err)
         {
-            error(err, res, acceptHTML, args);
+            error("404 Not Found", res, acceptHTML, args);
         }
         else
         {

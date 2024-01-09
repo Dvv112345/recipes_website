@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  {{extend:templates/head.html}}
+  <body>
+    {{extend:templates/nav.html}}
+    <div class="container">
+      <h2 class="text-center">{{replace:name}}</h2>
+      <div class="row">
+        <div class="col-0 col-lg-4"></div>
+        <div class="col-lg-4 mb-1">
+          <div class="row">
+            <div class="col-2"></div>
+            <div class="col-4">
+                <h6>Cuisine: </h6>
+            </div>
+            <div class="col-6">
+                <h6>{{replace:cuisine}}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-0 col-lg-4"></div>
+        <div class="col-lg-4 mb-1">
+          <div class="row">
+            <div class="col-2"></div>
+            <div class="col-4">
+                <h6>Difficulty: </h6>
+            </div>
+            <div class="col-6">
+                <h6>{{replace:difficulty}}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-0 col-lg-4"></div>
+        <div class="col-lg-4 mb-1">
+          <div class="row">
+            <div class="col-2"></div>
+            <div class="col-4">
+                <h6>Duration: </h6>
+            </div>
+            <div class="col-6">
+                <h6>
+                    {{if:durationHours}}
+                    {{replace:durationHours}} hour 
+                    {{endif}}
+                    {{if:durationMinutes}}
+                    {{replace:durationMinutes}} minutes
+                    {{endif}}
+                </h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-0 col-lg-4"></div>
+        <div class="col-lg-4 mb-1">
+          <div class="row">
+            <div class="col-2"></div>
+            <div class="col-4">
+                <h6>Likes: </h6>
+            </div>
+            <div class="col-6">
+                <h6>{{replace:favCount}}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-0 col-lg-4"></div>
+        <div class="col-lg-4 mb-1">
+          <div class="row">
+            <div class="col-2"></div>
+            <div class="col-4">
+                <h6>Uploader: </h6>
+            </div>
+            <div class="col-6">
+                <h6>{{replace:owner}}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-0 col-lg-4"></div>
+        <div class="col-lg-4 mb-1">
+          <div class="row">
+            <div class="col-2"></div>
+            <div class="col-4">
+                <h6>Status: </h6>
+            </div>
+            <div class="col-6">
+                <h6>{{replace:public}}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-0 col-lg-4"></div>
+        <div class="col-lg-4 mb-1">
+          <div class="text-center">
+                <h4>Materials</h4>
+          </div>
+          <div class="row">
+            <div class="col-2"></div>
+            <div class="col-10">
+                <ul>
+                    {{replace:materials}}
+                </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-0 col-lg-4"></div>
+        <div class="col-lg-4 mb-1">
+            <div class="text-center">
+                    <h4>Steps</h4>
+            </div>
+            <ol>
+                {{replace:steps}}
+            </ol>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

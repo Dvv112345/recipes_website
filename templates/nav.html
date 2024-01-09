@@ -14,21 +14,21 @@
       </button>
       <div class="collapse navbar-collapse" id="collapsibleNavId">
         <ul class="navbar-nav me-auto mt-1 mt-lg-0">
+          {{if:login}}
           <li class="nav-item">
             <a class="nav-link" href="#">Favorites</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">My recipes</a>
           </li>
-          {{if:login}}
           <li class="nav-item">
-            <a class="nav-link" href="/newRecipe.html">Upload recipe</a>
+            <a class="nav-link" href="/addRecipe.html">Upload recipe</a>
           </li>
           {{endif}}
         </ul>
         {{ifnot:login}}
         <form 
-          class="d-flex my-1 my-lg-0 mx-md-1 needs-validation"
+          class="d-flex my-1 my-lg-0 mx-md-1 needs-validation d-flex justify-content-end"
           action="/"
           method="POST"
           novalidate
