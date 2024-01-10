@@ -5,14 +5,16 @@
   <body>
     {{extend:templates/nav.html}}
     <div class="container-xxl">
+      <h4 class="text-center">Popular recipes</h4>
       <!-- Filter -->
       <form>
 
       </form>
       <!-- Receipe cards -->
-      <div class="row">
-        {{for:recipes:templates/recipeBlock.html}}
+      <div class="row" id="recipes">
       </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/static/requestRecipe.js"></script>
   </body>
 </html>

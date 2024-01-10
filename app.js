@@ -100,8 +100,6 @@ async function getRequest(req, res, args)
     }
     if (path == "./templates/home.html")
     {
-        searchParam["public"] = true;
-        args["recipes"] = [searchParam, "recipe"];
         render(path, res, result.acceptHTML, args);
         return;
     }
@@ -182,7 +180,6 @@ async function register(formEntries, res, acceptHTML, args)
         console.log("User inserted");
         args["login"] = true;
         args["username"] = formEntries.username
-        args["recipes"] = [{"public":true}, "recipe"];
         render("./templates/home.html", res, acceptHTML, args);
     } catch (e) {
         console.log(e);
@@ -199,7 +196,6 @@ async function login(formEntries, res, acceptHTML, args)
 {
     res.statusCode = 200;
     let requiredProperties = ["username", "password"];
-    args["recipes"] = [{"public":true}, "recipe"];
     if (!checkEntries(formEntries, res, acceptHTML, requiredProperties, args))
     {
         args["loginError"] = "Please enter username and password";
@@ -314,7 +310,6 @@ async function addRecipe(formEntries, res, acceptHTML, args)
                 return;
             });
         console.log("Recipe inserted");
-        args["recipes"] = [{"public":true}, "recipe"];
         render("./templates/home.html", res, acceptHTML, args);
     } catch (e) {
         console.log(e);
@@ -326,6 +321,29 @@ async function addRecipe(formEntries, res, acceptHTML, args)
     }
     
 
+}
+
+async function getRecipe(formEntries, res, acceptHTML)
+{
+    const client = new MongoClient(uri);
+    try {
+        // Connect to the MongoDB cluster
+        await client.connect();
+        // Make the appropriate DB calls
+        // console.log(`Connected: ${args[searchParam][1]}`)
+        // console.log(args[searchParam][0])
+        formEntries["public"] = true;
+        let result = await client.db("recipes").collection("recipe").find(formEntries)
+        .sort({"favCount":-1}).toArray();
+        // console.log(result);
+        res.end(JSON.stringify(result));
+    } catch (e) {
+        console.log("Error: ", e);
+        error("An unexpected error occured, please try again", res, acceptHTML);
+    } finally {
+        await client.close();
+        // console.log("End of forEach");
+    }
 }
 
 async function postRequest(req, res, args)
@@ -345,23 +363,30 @@ async function postRequest(req, res, args)
     req.on("end", ()=>{
         // Convert data into an object
         const data = Buffer.concat(chunks);
-        const query = data.toString();
-        const parsed = new URLSearchParams(query);
-        for (let pair of parsed.entries())
+        if (req.headers["content-type"] == "application/x-www-form-urlencoded")
         {
-            if (formEntries.hasOwnProperty(pair[0]) && pair[1])
+            const query = data.toString();
+            const parsed = new URLSearchParams(query);
+            for (let pair of parsed.entries())
             {
-                if (!Array.isArray(formEntries[pair[0]]))
+                if (formEntries.hasOwnProperty(pair[0]) && pair[1])
                 {
-                    formEntries[pair[0]] = [formEntries[pair[0]]]
+                    if (!Array.isArray(formEntries[pair[0]]))
+                    {
+                        formEntries[pair[0]] = [formEntries[pair[0]]]
+                    }
+                    formEntries[pair[0]].push(pair[1])
+                    
                 }
-                formEntries[pair[0]].push(pair[1])
-                
+                else
+                {
+                    formEntries[pair[0]] = pair[1];
+                }
             }
-            else
-            {
-                formEntries[pair[0]] = pair[1];
-            }
+        }
+        else if(req.headers["content-type"] == "application/json")
+        {
+            formEntries = JSON.parse(data.toString());
         }
         console.log("POST request query: ", formEntries)
     })
@@ -378,6 +403,10 @@ async function postRequest(req, res, args)
     else if (req.url == "/addRecipe.html")
     {
         addRecipe(formEntries, res, result.acceptHTML, args);
+    }
+    else if (req.url == "/getRecipe")
+    {
+        getRecipe(formEntries, res, result.acceptHTML);
     }
     else
     {

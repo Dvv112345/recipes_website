@@ -15,7 +15,11 @@ function typeCheck(req, res)
     // acceptHTML that specifies whether HTML type is expected. 
     // expectedType that contain an array of the two parts of MIME type.
     let expectedType = mime.lookup(req.url);
-    if (!expectedType)
+    if (req.url == "/getRecipe")
+    {
+        expectedType = "application/json"
+    }
+    else if (!expectedType)
     {
         expectedType = "*/*";
     }
@@ -29,7 +33,7 @@ function typeCheck(req, res)
     }
     else
     {
-        result.errorInfo = `Error: expected to return MIME type ${expectedType} but it is not accepted`
+        result.errorInfo = `Expected to return MIME type ${expectedType} but it is not accepted`
         res.setHeader("content-type", "text/plain")
         result.error = true;
     }
