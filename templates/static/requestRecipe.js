@@ -84,6 +84,27 @@ for (let checkbox of checkboxes)
 {
     if (checkbox.name == "duration" || checkbox.name == "difficulty" || checkbox.name == "cuisine")
     {
-        console.log(checkbox.value);
+        checkbox.onchange = () => {filterChange()};
     } 
+}
+
+function filterChange()
+{
+    let filter = {"duration":[], "difficulty":[], "cuisine":[]}
+    for (let checkbox of checkboxes)
+    {
+        if (checkbox.name == "duration" && checkbox.checked)
+        {
+            let interval = checkbox.value.split("-");
+            if (interval.length == 2)
+            {
+                for (let i = 0; i < 2; i++)
+                {
+                    interval[i] = parseInt(interval[i]);
+                }
+                filter["duration"].push(interval);
+            }
+        }
+    }
+    console.log(filter);
 }
