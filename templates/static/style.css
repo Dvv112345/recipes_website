@@ -28,3 +28,11 @@
 textarea.highArea {
     height: 5rem !important;
 }
+
+.dropDown {
+    width: 95%;
+    max-height: 50vh;
+    overflow-y:scroll;
+    
+}
+

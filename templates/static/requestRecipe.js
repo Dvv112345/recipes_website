@@ -29,7 +29,7 @@ function getData()
                     title.innerHTML = doc["name"];
                     cardBody.appendChild(title);
                     let cardText = document.createElement("p");
-                    cardText.className = "card-text px-5";
+                    cardText.className = "card-text px-3";
                     const totalMinutes = doc["duration"];
                     const durationHours = Math.floor(totalMinutes / 60);
                     const durationMinutes = totalMinutes % 60;
@@ -53,4 +53,37 @@ function getData()
                 }
             }
         }).catch(getData);
+}
+
+dropDowns = document.getElementsByClassName("dropdown-toggle")
+for (let toggle of dropDowns)
+{
+    toggle.onclick = ()=>{closeOther(toggle.id)};
+}
+
+function closeOther(id)
+{
+    for (let toggle of dropDowns)
+    {
+        if (toggle.id != id)
+        {
+            toggle.setAttribute("aria-expanded", "false");
+            for (let child of toggle.parentElement.children)
+            {
+                if (child.tagName == "UL")
+                {
+                    child.classList.remove("show");
+                }
+            }
+        }
+    }
+}
+
+checkboxes = document.getElementsByClassName("form-check-input");
+for (let checkbox of checkboxes)
+{
+    if (checkbox.name == "duration" || checkbox.name == "difficulty" || checkbox.name == "cuisine")
+    {
+        console.log(checkbox.value);
+    } 
 }

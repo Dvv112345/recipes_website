@@ -7,9 +7,334 @@
     <div class="container-xxl">
       <h4 class="text-center">Popular recipes</h4>
       <!-- Filter -->
-      <form>
-
-      </form>
+      <div class="row">
+        <div class="btn-group col-12 col-md-4 my-1">
+          <button
+            class="btn btn-secondary dropdown-toggle"
+            type="button"
+            data-bs-auto-close="false"
+            data-bs-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            id="cuisineToggle"
+          >
+            Cuisine
+          </button>
+          <ul class="dropdown-menu dropdown-menu-start dropDown">
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Chinese" id="cuisineChinese" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineChinese">
+                  Chinese
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="French" id="cuisineFrench" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineFrench">
+                  French
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Italian" id="cuisineItalian" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineItalian">
+                  Italian
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Japanese" id="cuisineJapanese" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineJapanese">
+                  Japanese
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Greek" id="cuisineGreek" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineGreek">
+                  Greek
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Spanish" id="cuisineSpanish" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineSpanish">
+                  Spanish
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Mediterranean" id="cuisineMediterranean" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineMediterranean">
+                  Mediterranean
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Lebanese" id="cuisineLebanese" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineLebanese">
+                  Lebanese
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Moroccan" id="cuisineMoroccan" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineMoroccan">
+                  Moroccan
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Turkish" id="cuisineTurkish" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineTurkish">
+                  Turkish
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Thai" id="cuisineThai" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineThai">
+                  Thai
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Indian" id="cuisineIndian" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineIndian">
+                  Indian
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Cajun" id="cuisineCajun" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineCajun">
+                  Cajun
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Mexican" id="cuisineMexican" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineMexican">
+                  Mexican
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Caribbean" id="cuisineCaribbean" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineCaribbean">
+                  Caribbean
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="German" id="cuisineGerman" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineGerman">
+                  German
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Russian" id="cuisineRussian" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineRussian">
+                  Russian
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Hungarian" id="cuisineHungarian" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineHungarian">
+                  Hungarian
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="American" id="cuisineAmerican" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineAmerican">
+                  American
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Creative" id="cuisineCreative" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineCreative">
+                  Creative
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Other" id="cuisineOther" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineOther">
+                  Other
+                </label>
+              </div>
+            </li>
+          </ul>
+        </div> 
+        <div class="btn-group col-12 col-md-4 my-1">
+          <button
+            class="btn btn-secondary dropdown-toggle"
+            data-bs-auto-close="false"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            id="difficultyToggle"
+          >
+            Difficulty
+          </button>
+          <ul class="dropdown-menu dropdown-menu-start dropDown">
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="low" id="difficultyLow" name="difficulty">
+                <label class="form-check-label w-100" for="difficultyLow">
+                  Low
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="medium" id="difficultyMed" name="difficulty">
+                <label class="form-check-label w-100" for="difficultyMed">
+                  Medium
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="high" id="difficultyHigh" name="difficulty">
+                <label class="form-check-label w-100" for="difficultyHigh">
+                  High
+                </label>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="btn-group col-12 col-md-4 my-1">
+          <button
+            class="btn btn-secondary dropdown-toggle"
+            type="button"
+            data-bs-auto-close="false"
+            data-bs-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            id="durationToggle"
+          >
+            Duration
+          </button>
+          <ul class="dropdown-menu dropdown-menu-start dropDown">
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="10" id="duration10" name="duration">
+                <label class="form-check-label w-100" for="duration10">
+                  Less than 10 minutes
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="20" id="duration20" name="duration">
+                <label class="form-check-label w-100" for="duration20">
+                  Between 10 and 20 minutes
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="30" id="duration30" name="duration">
+                <label class="form-check-label w-100" for="duration30">
+                  Between 20 and 30 minutes
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="40" id="duration40" name="duration">
+                <label class="form-check-label w-100" for="duration40">
+                  Between 30 and 40 minutes
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="50" id="duration50" name="duration">
+                <label class="form-check-label w-100" for="duration50">
+                  Between 40 and 50 minutes
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="60" id="duration60" name="duration">
+                <label class="form-check-label w-100" for="duration60">
+                  Between 50 and 60 minutes
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="90" id="duration90" name="duration">
+                <label class="form-check-label w-100" for="duration90">
+                  Between 1 hour and 1.5 hours
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="120" id="duration120" name="duration">
+                <label class="form-check-label w-100" for="duration120">
+                  Between 1.5 hour and 2 hours
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="180" id="duration180" name="duration">
+                <label class="form-check-label w-100" for="duration180">
+                  Between 2 hours and 3 hours
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="240" id="duration240" name="duration">
+                <label class="form-check-label w-100" for="duration240">
+                  Between 3 hours and 4 hours
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="+" id="duration+" name="duration">
+                <label class="form-check-label w-100" for="duration+">
+                  More than 4 hours
+                </label>
+              </div>
+            </li>
+          </ul>
+        </div>
+          
+      </div>
       <!-- Receipe cards -->
       <div class="row" id="recipes">
       </div>

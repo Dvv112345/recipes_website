@@ -325,12 +325,12 @@ async function addRecipe(formEntries, res, acceptHTML, args)
 
 async function getRecipe(formEntries, res, acceptHTML)
 {
-    const client = new MongoClient(uri);
     try {
         // Connect to the MongoDB cluster
+        console.log("Connecting to DB");
         await client.connect();
         // Make the appropriate DB calls
-        // console.log(`Connected: ${args[searchParam][1]}`)
+        console.log(`DB connected`);
         // console.log(args[searchParam][0])
         formEntries["public"] = true;
         let result = await client.db("recipes").collection("recipe").find(formEntries)
