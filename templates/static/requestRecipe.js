@@ -1,14 +1,22 @@
+let count = 0;
+
 window.addEventListener("load", function () {
-    getData();
+    filterChange();
 });
 
-function getData()
+function getData(filter, clear)
 {
-    axios.post("/getRecipe", {}, {"headers":{"content-type": "application/json", "accept": "application/json"}}).then(
+    axios.post("/getRecipe", filter, {"headers":{"content-type": "application/json", "accept": "application/json"}}).then(
         (response)=>{
             if (response.status == 200)
             {
                 const parent = document.getElementById("recipes")
+                if (clear)
+                {
+                    parent.innerHTML = "";
+                }
+                count += response.data.length;
+                alert(count);
                 for (let doc of response.data)
                 {
                     let col = document.createElement("div");
@@ -52,7 +60,7 @@ function getData()
                     cardBody.appendChild(cardText);
                 }
             }
-        }).catch(getData);
+        }).catch(()=>{getData(filter, clear)});
 }
 
 dropDowns = document.getElementsByClassName("dropdown-toggle")
@@ -105,6 +113,10 @@ function filterChange()
                 filter["duration"].push(interval);
             }
         }
+        if ((checkbox.name == "difficulty" || checkbox.name == "cuisine") && checkbox.checked)
+        {
+            filter[checkbox.name].push(checkbox.value);
+        }
     }
-    console.log(filter);
+    getData(filter, true);
 }

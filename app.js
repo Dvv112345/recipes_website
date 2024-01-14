@@ -325,18 +325,46 @@ async function addRecipe(formEntries, res, acceptHTML, args)
 
 async function getRecipe(formEntries, res, acceptHTML)
 {
+    // Parse formEntries
+    let query = {};
+    query["public"] = true;
+    const inFilters = ["cuisine", "difficulty"]
+    for (let filter of inFilters)
+    {
+        if (formEntries.hasOwnProperty(filter) && formEntries[filter].length > 0)
+        {
+            query[filter] = {"$in": formEntries[filter]};
+        }
+    }
+    if (formEntries.hasOwnProperty("duration") && formEntries["duration"].length > 0)
+    {
+        let orArray = []
+        for (let pair of formEntries["duration"])
+        {
+            if (!isNaN(pair[0]) && !isNaN(pair[1]))
+            {
+                orArray.push({"duration": {"$gte" : pair[0], "$lt": pair[1]}});
+            }
+            if(!isNaN(pair[0]) && isNaN(pair[1]))
+            {
+                orArray.push({"duration": {"$gte": pair[0]}});
+            }
+            
+        }
+        query["$or"] = orArray;
+    }
+    console.log("Query: ", query)
     try {
         // Connect to the MongoDB cluster
-        console.log("Connecting to DB");
+        // console.log("Connecting to DB");
         await client.connect();
         // Make the appropriate DB calls
-        console.log(`DB connected`);
-        // console.log(args[searchParam][0])
-        formEntries["public"] = true;
-        let result = await client.db("recipes").collection("recipe").find(formEntries)
+        // console.log(`DB connected`);
+        let result = await client.db("recipes").collection("recipe").find(query)
         .sort({"favCount":-1}).toArray();
         // console.log(result);
         res.end(JSON.stringify(result));
+        console.log("Response sent");
     } catch (e) {
         console.log("Error: ", e);
         error("An unexpected error occured, please try again", res, acceptHTML);

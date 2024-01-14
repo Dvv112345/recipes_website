@@ -55,6 +55,14 @@
             </li>
             <li class="dropdown-item">
               <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Korean" id="cuisineKorean" name="cuisine">
+                <label class="form-check-label w-100" for="cuisineKorean">
+                  Korean
+                </label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="Greek" id="cuisineGreek" name="cuisine">
                 <label class="form-check-label w-100" for="cuisineGreek">
                   Greek
@@ -206,7 +214,7 @@
           <ul class="dropdown-menu dropdown-menu-start dropDown">
             <li class="dropdown-item">
               <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="low" id="difficultyLow" name="difficulty">
+                <input class="form-check-input" type="checkbox" value="Low" id="difficultyLow" name="difficulty">
                 <label class="form-check-label w-100" for="difficultyLow">
                   Low
                 </label>
@@ -214,7 +222,7 @@
             </li>
             <li class="dropdown-item">
               <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="medium" id="difficultyMed" name="difficulty">
+                <input class="form-check-input" type="checkbox" value="Medium" id="difficultyMed" name="difficulty">
                 <label class="form-check-label w-100" for="difficultyMed">
                   Medium
                 </label>
@@ -222,7 +230,7 @@
             </li>
             <li class="dropdown-item">
               <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="high" id="difficultyHigh" name="difficulty">
+                <input class="form-check-input" type="checkbox" value="High" id="difficultyHigh" name="difficulty">
                 <label class="form-check-label w-100" for="difficultyHigh">
                   High
                 </label>
@@ -338,6 +346,7 @@
       <!-- Receipe cards -->
       <div class="row" id="recipes">
       </div>
+      <button class="btn position-absolute start-50 translate-middle-x addNew">Load more</button>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="/static/requestRecipe.js"></script>
