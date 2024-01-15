@@ -1,4 +1,5 @@
 let count = 0;
+let curFilter = {};
 
 window.addEventListener("load", function () {
     filterChange();
@@ -6,6 +7,15 @@ window.addEventListener("load", function () {
 
 function getData(filter, clear)
 {
+    if (clear)
+    {
+        filter["skip"] = 0;
+    }
+    else
+    {
+        filter["skip"] = count;
+    }
+    
     axios.post("/getRecipe", filter, {"headers":{"content-type": "application/json", "accept": "application/json"}}).then(
         (response)=>{
             if (response.status == 200)
@@ -14,10 +24,18 @@ function getData(filter, clear)
                 if (clear)
                 {
                     parent.innerHTML = "";
+                    count = 0;
                 }
-                count += response.data.length;
-                alert(count);
-                for (let doc of response.data)
+                else if (response.data["start"] != count)
+                {
+                    return;
+                }
+                if (filter != curFilter)
+                {
+                    return;
+                }
+                count += response.data["result"].length;
+                for (let doc of response.data["result"])
                 {
                     let col = document.createElement("div");
                     col.className = "col-12 col-md-6 col-lg-4 my-1";
@@ -60,7 +78,12 @@ function getData(filter, clear)
                     cardBody.appendChild(cardText);
                 }
             }
-        }).catch(()=>{getData(filter, clear)});
+        }).catch(()=>{
+            if (filter == curFilter)
+            {
+                getData(curFilter, clear);
+            }
+        });
 }
 
 dropDowns = document.getElementsByClassName("dropdown-toggle")
@@ -118,5 +141,12 @@ function filterChange()
             filter[checkbox.name].push(checkbox.value);
         }
     }
+    curFilter = filter
+    count = 0;
     getData(filter, true);
+}
+
+function loadMore()
+{
+    getData(curFilter, false);
 }

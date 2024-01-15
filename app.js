@@ -353,6 +353,11 @@ async function getRecipe(formEntries, res, acceptHTML)
         }
         query["$or"] = orArray;
     }
+    let start = 0;
+    if (formEntries.hasOwnProperty("skip") && !isNaN(parseInt(formEntries["skip"])))
+    {
+        start = parseInt(formEntries["skip"]);
+    }
     console.log("Query: ", query)
     try {
         // Connect to the MongoDB cluster
@@ -361,9 +366,10 @@ async function getRecipe(formEntries, res, acceptHTML)
         // Make the appropriate DB calls
         // console.log(`DB connected`);
         let result = await client.db("recipes").collection("recipe").find(query)
-        .sort({"favCount":-1}).toArray();
+        .sort({"favCount":-1}).skip(start).limit(6).toArray();
         // console.log(result);
-        res.end(JSON.stringify(result));
+        let response = {"start":start, "result":result}
+        res.end(JSON.stringify(response));
         console.log("Response sent");
     } catch (e) {
         console.log("Error: ", e);
